@@ -1,6 +1,6 @@
 # Organization
 
-### Organization files and discussion
+### Organization files and issues
 
 [**activist.org**](http://activist.org/) is a network for sociopolitical action that allows people the world over to coordinate and collaborate on the issues that matter most. This repository contains all the activist branding files and serves as a place for issues relating to the activist organization itself.
 
