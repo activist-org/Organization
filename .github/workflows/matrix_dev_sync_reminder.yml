@@ -5,7 +5,7 @@ on:
   workflow_dispatch: # manual triggering
 
 env:
-  FIRST_SYNC_DATE: "2024-11-2"
+  FIRST_RUN_DATE: "2024-11-13"
 
 jobs:
   weekindex:
@@ -20,22 +20,22 @@ jobs:
         id: calculate
         run: |
           current_date=$(date +%Y-%m-%d)
-          start=$(date -d "${{ env.FIRST_SYNC_DATE }}" +%s)
+          start=$(date -d "${{ env.FIRST_RUN_DATE }}" +%s)
           end=$(date -d "$current_date" +%s)
           weekdiff=$(((end - start) / 60 / 60 / 24 / 7))
           weekindex=$((weekdiff % 2))
           # Calculate next bi-weekly date.
           if [ "$weekindex" -eq 0 ]; then
-            next_bi_weekly_date=$(date -d "$current_date + 14 days" +%Y-%m-%d)
-            next_next_bi_weekly_date=$(date -d "$current_date + 28 days" +%Y-%m-%d)
+            next_bi_weekly_date=$(date -d "$current_date + 3 days" +%Y-%m-%d)
+            next_next_bi_weekly_date=$(date -d "$current_date + 17 days" +%Y-%m-%d)
           else
-            next_bi_weekly_date=$(date -d "$current_date + 7 days" +%Y-%m-%d)
-            next_next_bi_weekly_date=$(date -d "$current_date + 21 days" +%Y-%m-%d)
+            next_bi_weekly_date=$(date -d "$current_date + 10 days" +%Y-%m-%d)
+            next_next_bi_weekly_date=$(date -d "$current_date + 24 days" +%Y-%m-%d)
           fi
           echo "weekindex=$weekindex" >> "$GITHUB_OUTPUT"
           echo "next_bi_weekly_date=$next_bi_weekly_date" >> "$GITHUB_OUTPUT"
           echo "next_next_bi_weekly_date=$next_next_bi_weekly_date" >> "$GITHUB_OUTPUT"
-          echo "FIRST_SYNC_DATE: ${{ env.FIRST_SYNC_DATE }}" >> $GITHUB_STEP_SUMMARY
+          echo "FIRST_RUN_DATE: ${{ env.FIRST_RUN_DATE }}" >> $GITHUB_STEP_SUMMARY
           echo "current_date: $current_date" >> $GITHUB_STEP_SUMMARY
           echo "weekdiff: $weekdiff" >> $GITHUB_STEP_SUMMARY
           echo "weekindex: $weekindex" >> $GITHUB_STEP_SUMMARY
@@ -131,7 +131,7 @@ jobs:
           </ul>
           <br>
 
-              <p>The next dev sync will be [Saturday the {next_next_bi_weekly_date} at 16:00 UTC](https://zonestamp.toolforge.org/${{ env.NEXT_NEXT_BI_WEEKLY_DATE }})</a>.</p>
+              <p>The next dev sync will be [Saturday the {next_next_bi_weekly_date} at 16:00 UTC](https://zonestamp.toolforge.org/${{ env.NEXT_NEXT_EPOCH_TIME }})</a>.</p>
 
           <br>
           <p>Nice outro 😊</p>
