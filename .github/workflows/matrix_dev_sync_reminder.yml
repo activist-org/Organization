@@ -1,0 +1,176 @@
+name: matrix_dev_sync_reminder
+on:
+  schedule:
+    - cron: "0 14 * * 3" # Wednesdays at 14:00 UTC
+  workflow_dispatch: # manual triggering
+
+env:
+  FIRST_RUN_DATE: "2024-11-13"
+
+jobs:
+  weekindex:
+    runs-on: ubuntu-latest
+    outputs:
+      weekindex: ${{ steps.calculate.outputs.weekindex }}
+      next_bi_weekly_date: ${{ steps.calculate.outputs.next_bi_weekly_date }}
+      next_next_bi_weekly_date: ${{ steps.calculate.outputs.next_next_bi_weekly_date }}
+
+    steps:
+      - name: Calculate Next Date
+        id: calculate
+        run: |
+          current_date=$(date +%Y-%m-%d)
+          start=$(date -d "${{ env.FIRST_RUN_DATE }}" +%s)
+          end=$(date -d "$current_date" +%s)
+          weekdiff=$(((end - start) / 60 / 60 / 24 / 7))
+          weekindex=$((weekdiff % 2))
+          # Calculate next bi-weekly date.
+          if [ "$weekindex" -eq 0 ]; then
+            next_bi_weekly_date=$(date -d "$current_date + 14 days" +%Y-%m-%d)
+            next_next_bi_weekly_date=$(date -d "$current_date + 28 days" +%Y-%m-%d)
+          else
+            next_bi_weekly_date=$(date -d "$current_date + 7 days" +%Y-%m-%d)
+            next_next_bi_weekly_date=$(date -d "$current_date + 21 days" +%Y-%m-%d)
+          fi
+          echo "weekindex=$weekindex" >> "$GITHUB_OUTPUT"
+          echo "next_bi_weekly_date=$next_bi_weekly_date" >> "$GITHUB_OUTPUT"
+          echo "next_next_bi_weekly_date=$next_next_bi_weekly_date" >> "$GITHUB_OUTPUT"
+          echo "FIRST_RUN_DATE: ${{ env.FIRST_RUN_DATE }}" >> $GITHUB_STEP_SUMMARY
+          echo "current_date: $current_date" >> $GITHUB_STEP_SUMMARY
+          echo "weekdiff: $weekdiff" >> $GITHUB_STEP_SUMMARY
+          echo "weekindex: $weekindex" >> $GITHUB_STEP_SUMMARY
+          echo "next_bi_weekly_date: $next_bi_weekly_date" >> $GITHUB_STEP_SUMMARY
+          if [ "$weekindex" -eq 0 ]; then
+            echo "🟢 It's the first week of the bi-weekly cycle. The action will run." >> $GITHUB_STEP_SUMMARY
+          else
+            echo "🔴 It's the second week of the bi-weekly cycle. The action will be skipped." >> $GITHUB_STEP_SUMMARY
+          fi
+  send-message:
+    if: ${{ needs.weekindex.outputs.weekindex == '0' }}
+    runs-on: ubuntu-latest
+    needs:
+      - weekindex
+    steps:
+      - name: Format EPOCH Time
+        id: epoch-time
+        run: |
+          current_epoch_time=$(date +%s)
+          next_epoch_time=$(date -d "${{ needs.weekindex.outputs.next_bi_weekly_date }} 16:00:00" +%s)
+          echo "EPOCH_TIME=$current_epoch_time" >> $GITHUB_ENV
+          echo "NEXT_BI_WEEKLY_DATE=${{ needs.weekindex.outputs.next_bi_weekly_date }}" >> $GITHUB_ENV
+          echo "NEXT_EPOCH_TIME=$next_epoch_time" >> $GITHUB_ENV
+          echo "NEXT_NEXT_BI_WEEKLY_DATE=${{ needs.weekindex.outputs.next_next_bi_weekly_date }}" >> $GITHUB_ENV
+          echo "NEXT_NEXT_EPOCH_TIME=$next_next_epoch_time" >> $GITHUB_ENV
+          echo "Current EPOCH time: $current_epoch_time" >> $GITHUB_STEP_SUMMARY
+          echo "Next bi-weekly date: ${{ needs.weekindex.outputs.next_bi_weekly_date }}" >> $GITHUB_STEP_SUMMARY
+          echo "Next EPOCH time (for sync): $next_epoch_time" >> $GITHUB_STEP_SUMMARY
+          echo "Next next bi-weekly date: ${{ needs.weekindex.outputs.next_next_bi_weekly_date }}" >> $GITHUB_STEP_SUMMARY
+          echo "Next next EPOCH time (for sync): $next_next_epoch_time" >> $GITHUB_STEP_SUMMARY
+      - name: Etherpad Creation
+        env:
+          NEXT_BI_WEEKLY_DATE: ${{ env.NEXT_BI_WEEKLY_DATE }}
+          NEXT_EPOCH_TIME: ${{ env.NEXT_EPOCH_TIME }}
+          NEXT_NEXT_BI_WEEKLY_DATE: ${{ env.NEXT_NEXT_BI_WEEKLY_DATE }}
+          NEXT_NEXT_EPOCH_TIME: ${{ env.NEXT_NEXT_EPOCH_TIME }}
+        run: |
+          pip install requests
+          python - <<EOF
+          import requests
+          import os
+
+          next_epoch_time = os.environ.get('NEXT_EPOCH_TIME')
+          next_bi_weekly_date = os.environ.get('NEXT_BI_WEEKLY_DATE')
+          next_next_epoch_time = os.environ.get('NEXT_NEXT_EPOCH_TIME')
+          next_next_bi_weekly_date = os.environ.get('NEXT_NEXT_BI_WEEKLY_DATE')
+          pad_name = f'activist-dev-sync-{next_bi_weekly_date}'
+          url = f'https://etherpad.wikimedia.org/p/{pad_name}/import'
+          print(f"Importing content to: https://etherpad.wikimedia.org/p/{pad_name}")
+
+          # The text you want to add to the pad.
+          content = f"""<html><body>
+          <h1>activist dev sync {next_bi_weekly_date}</h1>
+
+          <p>Pad directory:  https://etherpad.wikimedia.org/p/activist-dev-sync</a><br>
+          ZoneStamp:  https://zonestamp.toolforge.org/{next_epoch_time}</a></p>
+          <br>
+
+          <h2>Participants (please list yourself if you'd like to)</h2>
+          <ul>
+            <li>Participant</li>
+          </ul>
+          <br>
+
+          <h2>Topics</h2>
+          <ul>
+            <li>All: introductions 👋</li>
+            <li>All: does anyone want a calendar invite to the dev sync? If so, send them out :)
+                <ul>
+                    <li>If you would like an invite, please message the team on Matrix/Element</li>
+                </ul>
+              </li>
+            <li>Recap done by: NAME</li>
+            <li>Go through the [project board](https://github.com/orgs/activist-org/projects/1)</a></li>
+            <li>Name:</li>
+          </ul>
+          <br>
+
+          <h2>Tasks (strikethrough ^/⌘ + 5 to mark as complete)</h2>
+          <ul>
+            <li>Task</li>
+          </ul>
+          <br>
+
+          <h2>Recap</h2>
+          <br>
+          <br>
+          <p>Here's the recap for today's/Saturday's dev sync 🧑‍💻♻️</p>
+
+          <ul>
+            <li>[Pad for this week](https://etherpad.wikimedia.org/p/activist-dev-sync-${{ env.NEXT_BI_WEEKLY_DATE }}) </a></li>
+            <li>Note</li>
+          </ul>
+          <br>
+
+              <p>The next dev sync will be [Saturday the {next_next_bi_weekly_date} at 16:00 UTC](https://zonestamp.toolforge.org/{next_next_epoch_time})</a>.</p>
+
+          <br>
+          <p>Nice outro 😊</p>
+
+          </body></html>"""
+
+          # Prepare the file to upload.
+          files = {
+              'file': ('import.html', content.encode('utf-8'), 'text/html'),
+          }
+
+          response = requests.post(url, files=files)
+
+          if response.status_code in [200, 302]:
+              print(f"Content imported successfully into pad '{pad_name}'.")
+          elif response.status_code == 413:
+              print("The file is too large to upload.")
+          else:
+              print(f"Failed to import content. Status code: {response.status_code}")
+              print(response.text)
+          EOF
+      - name: Send Message to Matrix Channel
+        id: matrix-chat-message
+        uses: fadenb/matrix-chat-message@v0.0.6
+        with:
+          homeserver: "matrix.org"
+          token: ${{ secrets.MATRIX_ACTIVIST_BOT_ACCESS_TOKEN }}
+          channel: ${{ secrets.MATRIX_DEVELOPMENT_ROOM_ID }}
+          message: |
+            Hello all! 🤖👋 Here's the reminder for [this Saturday's dev sync at 16:00 UTC](https://zonestamp.toolforge.org/${{ env.NEXT_EPOCH_TIME }}) 🧑‍💻♻️
+
+            For those new to the community, every two Saturdays the activist team does a call to discuss the projects. We use [Element Call](https://call.element.io/) and will also use a [pad from Wikimedia's Etherpad instance](https://etherpad.wikimedia.org/p/activist-dev-sync-${{ env.NEXT_BI_WEEKLY_DATE }}) for taking notes. Note that Element Call doesn't have a chat, so questions need to be written in the pad :)
+
+            Details for the upcoming sync:
+
+            - Call link: https://call.element.io/room/#/activist-dev-sync?roomId=!UddhHUSXxHAoAnImXb:call.ems.host&password=ASriEQCG4DE6Q1QSB313zig0bhLd62RN
+            - This week's pad: https://etherpad.wikimedia.org/p/activist-dev-sync-${{ env.NEXT_BI_WEEKLY_DATE }}
+            - All activist pads: https://etherpad.wikimedia.org/p/activist-dev-sync
+
+            Please reply in the thread for this message with anything you'd like to discuss 🧵
+
+            Thanks and have a great day! ❤️
