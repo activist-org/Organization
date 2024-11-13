@@ -88,7 +88,7 @@ jobs:
 
           # The text you want to add to the pad.
           content = f"""<html><body>
-          <h1>activist dev sync {next_bi_weekly_date}</h1>
+          <h1><strong>activist dev sync {next_bi_weekly_date}</strong></h1>
 
           <p>Pad directory:  https://etherpad.wikimedia.org/p/activist-dev-sync</a><br>
           ZoneStamp:  https://zonestamp.toolforge.org/{next_epoch_time}</a></p>
@@ -102,8 +102,8 @@ jobs:
 
           <h2>Topics</h2>
           <ul>
-            <li>All: introductions 👋</li>
-            <li>All: does anyone want a calendar invite to the dev sync? If so, send them out :)
+            <li>All: Introductions 👋</li>
+            <li>All: Does anyone want a calendar invite to the dev sync? If so, send them out :)
                 <ul>
                     <li>If you would like an invite, please message the team on Matrix/Element</li>
                 </ul>
@@ -120,7 +120,7 @@ jobs:
           </ul>
           <br>
 
-          <h2>Recap</h2>
+          <h2><strong>Recap</strong></h2>
           <br>
           <br>
           <p>Here's the recap for today's/Saturday's dev sync 🧑‍💻♻️</p>
@@ -131,7 +131,7 @@ jobs:
           </ul>
           <br>
 
-              <p>The next dev sync will be [Saturday the {next_next_bi_weekly_date} at 16:00 UTC](https://zonestamp.toolforge.org/{next_next_epoch_time})</a>.</p>
+              <p>The next dev sync will be [Saturday the {next_next_bi_weekly_date} at 16:00 UTC](https://zonestamp.toolforge.org/${{ env.NEXT_NEXT_BI_WEEKLY_DATE }})</a>.</p>
 
           <br>
           <p>Nice outro 😊</p>
