@@ -126,15 +126,13 @@ jobs:
           <br>
           <br>
           <p>Here's the recap for today's/Saturday's dev sync 🧑‍💻♻️</p>
-
-          <ul>
-            <li>[Pad for this week](https://etherpad.wikimedia.org/p/activist-dev-sync-${{ env.NEXT_BI_WEEKLY_DATE }}) </a></li>
-            <li>Note</li>
-          </ul>
           <br>
-
-              <p>The next dev sync will be [Saturday the {next_next_bi_weekly_date} at 16:00 UTC](https://zonestamp.toolforge.org/${{ env.NEXT_NEXT_EPOCH_TIME }})</a>.</p>
-
+          <p>
+            - [Pad for this week](https://etherpad.wikimedia.org/p/activist-dev-sync-${{ env.NEXT_BI_WEEKLY_DATE }})
+            - Note
+          </p>
+          <br>
+          <p>The next dev sync will be [Saturday the {next_next_bi_weekly_date} at 16:00 UTC](https://zonestamp.toolforge.org/${{ env.NEXT_NEXT_EPOCH_TIME }}).</p>
           <br>
           <p>Nice outro 😊</p>
 
