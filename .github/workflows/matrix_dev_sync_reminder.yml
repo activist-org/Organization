@@ -90,7 +90,7 @@ jobs:
           # The text you want to add to the pad.
           content = f"""<html><body>
           <h1><strong>activist dev sync {next_bi_weekly_date}</strong></h1>
-
+          <br>
           <br>
           <p>Pad directory:  https://etherpad.wikimedia.org/p/activist-dev-sync</a><br>
           ZoneStamp:  https://zonestamp.toolforge.org/{next_epoch_time}</a></p>
