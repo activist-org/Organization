@@ -8,7 +8,24 @@ env:
   FIRST_RUN_DATE: "2024-11-13"
 
 jobs:
+  check-repository:
+    runs-on: ubuntu-latest
+    outputs:
+      is_correct_repo: ${{ steps.check.outputs.is_correct_repo }}
+    steps:
+      - name: Check repository
+        id: check
+        run: |
+          if [ "$GITHUB_REPOSITORY" = "activist-org/Organization" ]; then
+            echo "is_correct_repo=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "is_correct_repo=false" >> "$GITHUB_OUTPUT"
+            echo "::warning::This workflow should only run in activist-org/Organization repository."
+          fi
+
   weekindex:
+    needs: check-repository
+    if: needs.check-repository.outputs.is_correct_repo == 'true'
     runs-on: ubuntu-latest
     outputs:
       weekindex: ${{ steps.calculate.outputs.weekindex }}
@@ -50,6 +67,7 @@ jobs:
     runs-on: ubuntu-latest
     needs:
       - weekindex
+      - check-repository
     steps:
       - name: Format EPOCH Time
         id: epoch-time
