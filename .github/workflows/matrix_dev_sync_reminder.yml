@@ -143,7 +143,7 @@ jobs:
           <h2><strong>Recap</strong></h2>
           <br>
           <br>
-          <p>Here's the recap for today's/Saturday's dev sync 🧑‍💻♻️</p>
+          <p>Here's the recap for today/yesterday/Saturday's dev sync 🧑‍💻♻️</p>
           <br>
           <p>
             - [Pad for the sync](https://etherpad.wikimedia.org/p/activist-dev-sync-${{ env.NEXT_BI_WEEKLY_DATE }})
