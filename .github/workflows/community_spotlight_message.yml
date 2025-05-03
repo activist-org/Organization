@@ -1,0 +1,52 @@
+name: Community Spotlight Message
+
+on:
+  schedule:
+    - cron: "0 0 25 * *" # runs on the 25th of each month at 00:00 UTC
+  workflow_dispatch: # allows manual triggering
+
+jobs:
+  calculate-contributors:
+    runs-on: ubuntu-latest
+    outputs:
+      # Output the formatted message for the Matrix message.
+      message: ${{ steps.calculate.outputs.message }}
+
+    steps:
+      # Checkout the repository to access the Python script.
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      # Set up Python environment.
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.x"
+
+      # Install Python dependencies.
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install requests
+
+      # Run the Python script to calculate top contributors and format the message.
+      - name: Calculate top contributors
+        id: calculate
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          python scripts/calculate_community_contributors.py
+
+  send-message:
+    runs-on: ubuntu-latest
+    needs: calculate-contributors # wait for contributor calculation to complete
+    steps:
+      # Send the formatted message to the Matrix channel.
+      - name: Send message to Matrix channel
+        id: matrix-chat-message
+        uses: fadenb/matrix-chat-message@v0.0.6
+        with:
+          homeserver: "matrix.org"
+          token: ${{ secrets.MATRIX_ACTIVIST_BOT_ACCESS_TOKEN }}
+          channel: ${{ secrets.MATRIX_DEVELOPMENT_ROOM_ID }}
+          message: ${{ needs.calculate-contributors.outputs.message }}
