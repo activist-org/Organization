@@ -160,12 +160,19 @@ def main():
     org_members = get_org_members()
     repos = get_repos()
 
+    users_to_ignore = ["weblate", " dependabot", "to-sta"]
+
     # Count commits per author while excluding org members.
     for repo in repos:
         commits = get_commits(repo, start_date, end_date)
         for commit in commits:
             author = commit.get("author")
-            if author and author.get("login") and author["login"] not in org_members:
+            if (
+                author
+                and author.get("login")
+                and author["login"] not in org_members
+                and author["login"] not in users_to_ignore
+            ):
                 contribution_count[author["login"]] += 1
 
     # Sort contributors by commit count.
@@ -195,7 +202,7 @@ def main():
         else:
             message += f"    - No pull requests found\n"
 
-    message += f"Thank you all for the amazing work over the last month! 💙\n"
+    message += f"\n\nThank you all for the amazing work over the last month! ❤️"
 
     # Write message to file for reference.
     with open("message.txt", "w") as f:
