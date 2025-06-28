@@ -160,7 +160,7 @@ def main():
     org_members = get_org_members()
     repos = get_repos()
 
-    users_to_ignore = ["weblate", " dependabot", "to-sta"]
+    users_to_ignore = ["weblate", "dependabot[bot]", "to-sta"]
 
     # Count commits per author while excluding org members.
     for repo in repos:
@@ -200,9 +200,9 @@ def main():
                 message += f"    - [{repo}](https://github.com/{ORG_ID}/{repo}/pulls?q=is%3Apr+author%3A{user}+created%3A{start_date.strftime('%Y-%m-%d')}..{end_date.strftime('%Y-%m-%d')}) ({pr_list})\n"
 
         else:
-            message += f"    - No pull requests found\n"
+            message += "    - No pull requests found\n"
 
-    message += f"\n\nThank you all for the amazing work over the last month! ❤️"
+    message += "\n\nThank you all for the amazing work over the last month! ❤️"
 
     # Write message to file for reference.
     with open("message.txt", "w") as f:
