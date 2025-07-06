@@ -85,6 +85,57 @@ jobs:
           echo "Next EPOCH time (for sync): $next_epoch_time" >> $GITHUB_STEP_SUMMARY
           echo "Next next bi-weekly date: ${{ needs.weekindex.outputs.next_next_bi_weekly_date }}" >> $GITHUB_STEP_SUMMARY
           echo "Next next EPOCH time (for sync): $next_next_epoch_time" >> $GITHUB_STEP_SUMMARY
+
+      - name: Check if Code Night should be announced
+        id: code-night-check
+        run: |
+          # Extract the month from the upcoming Saturday (next_bi_weekly_date).
+          current_saturday_month=$(date -d "${{ needs.weekindex.outputs.next_bi_weekly_date }}" +%m)
+
+          # Remove leading zero for comparison.
+          current_saturday_month=$((10#$current_saturday_month))
+
+          # Extract the month from the following Saturday (next_next_bi_weekly_date).
+          following_saturday_month=$(date -d "${{ needs.weekindex.outputs.next_next_bi_weekly_date }}" +%m)
+          following_saturday_month=$((10#$following_saturday_month))
+
+          # Define code-night months (January, March, May, July, September, November).
+          code_night_months=(1 3 5 7 9 11)
+
+          is_code_night_month=false
+          for month in "${code_night_months[@]}"; do
+            if [ "$current_saturday_month" -eq "$month" ]; then
+              is_code_night_month=true
+              break
+            fi
+          done
+
+          # Calculate which sync this is within the current month.
+          current_saturday_date=$(date -d "${{ needs.weekindex.outputs.next_bi_weekly_date }}" +%d)
+          current_saturday_date=$((10#$current_saturday_date))
+          sync_number_in_month=$(((current_saturday_date - 1) / 14 + 1))
+
+          # Check if this is the last Saturday of a code-night month.
+          # Upcoming Saturday is in code-night month AND following Saturday is in different month.
+          if [ "$is_code_night_month" = true ] && [ "$current_saturday_month" -ne "$following_saturday_month" ]; then
+            echo "IS_CODE_NIGHT_SYNC=true" >> $GITHUB_ENV
+            echo "🌙 This is the last dev sync of a code-night month - Code Night will be announced!"
+            echo "🌙 This is the last dev sync of a code-night month - Code Night will be announced!" >> $GITHUB_STEP_SUMMARY
+          elif [ "$is_code_night_month" = true ]; then
+            echo "IS_CODE_NIGHT_SYNC=false" >> $GITHUB_ENV
+            echo "🔍 DEBUG: This is a special code-night month (month $current_saturday_month) and this is sync #$sync_number_in_month, but NOT the last sync of this month - Code Night message will NOT show"
+            echo "🔍 DEBUG: This is a special code-night month (month $current_saturday_month) and this is sync #$sync_number_in_month, but NOT the last sync of this month - Code Night message will NOT show" >> $GITHUB_STEP_SUMMARY
+          else
+            echo "IS_CODE_NIGHT_SYNC=false" >> $GITHUB_ENV
+            echo "📅 Regular dev sync - no Code Night announcement needed (not a code-night month)"
+            echo "📅 Regular dev sync - no Code Night announcement needed (not a code-night month)" >> $GITHUB_STEP_SUMMARY
+          fi
+
+          echo "Current Saturday month: $current_saturday_month" >> $GITHUB_STEP_SUMMARY
+          echo "Following Saturday month: $following_saturday_month" >> $GITHUB_STEP_SUMMARY
+          echo "Is code-night month: $is_code_night_month" >> $GITHUB_STEP_SUMMARY
+          echo "Sync number in month: $sync_number_in_month" >> $GITHUB_STEP_SUMMARY
+
       - name: Etherpad Creation
         env:
           NEXT_BI_WEEKLY_DATE: ${{ env.NEXT_BI_WEEKLY_DATE }}
@@ -190,6 +241,8 @@ jobs:
             - This week's pad: https://etherpad.wikimedia.org/p/activist-dev-sync-${{ env.NEXT_BI_WEEKLY_DATE }}
             - All activist pads: https://etherpad.wikimedia.org/p/activist-dev-sync
 
-            Please reply in the thread for this message with anything you'd like to discuss 🧵
+            Please reply in the thread for this message with anything you'd like to discuss 🧵${{ env.IS_CODE_NIGHT_SYNC == 'true' && '
+
+            **Also note**: This dev sync is Code Night! 🌙 The community will stay in the call after the sync to work on projects together, pair program and hang out :) All skill levels are welcome!' || '' }}
 
             Thanks and have a great day! ❤️
