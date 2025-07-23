@@ -237,7 +237,9 @@ jobs:
           message: |
             Hello all! 🤖👋 Here's the reminder for [this Saturday's dev sync at 16:00 UTC](https://zonestamp.toolforge.org/${{ env.NEXT_EPOCH_TIME }}) 🧑‍💻♻️
 
-            For those new to the community, every two Saturdays the activist team does a call to discuss the project. We use [Element Call](https://call.element.io/) and a [pad from Wikimedia's Etherpad instance](https://etherpad.wikimedia.org/p/activist-dev-sync-${{ env.NEXT_BI_WEEKLY_DATE }}) for taking notes. Note that Element Call doesn't have a chat, so questions need to be written in the pad :)
+            For those new to the community, every two Saturdays the activist team does a call to discuss the project. We use [Element Call](https://call.element.io/) and a [pad from Wikimedia's Etherpad instance](https://etherpad.wikimedia.org/p/activist-dev-sync-${{ env.NEXT_BI_WEEKLY_DATE }}) for taking notes. Note that Element Call doesn't have a chat, so questions need to be written in the pad :)${{ env.IS_CODE_NIGHT_SYNC == 'true' && '
+
+            **Also note: This dev sync is Code Night! 🌙 For the last dev sync every two months the community stays in the call to work on projects together, pair program and hang out :) All skill levels are welcome!**' || '' }}
 
             Details for the upcoming sync:
 
@@ -245,8 +247,6 @@ jobs:
             - This week's pad: https://etherpad.wikimedia.org/p/activist-dev-sync-${{ env.NEXT_BI_WEEKLY_DATE }}
             - All activist pads: https://etherpad.wikimedia.org/p/activist-dev-sync
 
-            Please reply in the thread for this message with anything you'd like to discuss 🧵${{ env.IS_CODE_NIGHT_SYNC == 'true' && '
-
-            **Also note**: This dev sync is Code Night! 🌙 The community will stay in the call after the sync to work on projects together, pair program and hang out :) All skill levels are welcome!' || '' }}
+            Please reply in the thread for this message with anything you'd like to discuss 🧵
 
             Thanks and have a great day! ❤️
