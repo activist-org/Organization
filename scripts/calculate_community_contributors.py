@@ -182,10 +182,10 @@ def main():
 
     # Build the message.
     message = (
-        "**Monthly Community Spotlight 👥🎉**\n\n"
-        f"Here are the top community contributors on GitHub to all **{ORG_NAME}** projects from "
+        "Hello all! 🤖👋 Here's the **Monthly Community Spotlight** 👥🎉\n\n"
+        f"The top community contributors on GitHub to all **{ORG_NAME}** projects from "
         f"**{start_date.strftime('%B %d')}** to **{end_date.strftime('%B %d')}** "
-        "(organization members not included):\n\n"
+        "(organization members not included) are:\n\n"
     )
 
     # Fetch PRs for each top contributor.
