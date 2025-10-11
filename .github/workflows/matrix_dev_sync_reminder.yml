@@ -169,10 +169,7 @@ jobs:
           ZoneStamp:  https://zonestamp.toolforge.org/{next_epoch_time}</a></p>
           <br>
 
-          <h2>Participants (please list yourself if you'd like to)</h2>
-          <ul>
-            <li>Participant</li>
-          </ul>
+          <h2>Number of participants: #</h2>
           <br>
 
           <h2>Topics</h2>
