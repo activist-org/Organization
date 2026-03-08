@@ -165,14 +165,11 @@ jobs:
           <h1><strong>activist dev sync {next_bi_weekly_date}</strong></h1>
           <br>
           <br>
-          <p>Pad directory:  https://etherpad.wikimedia.org/p/activist-dev-sync</a><br>
-          ZoneStamp:  https://zonestamp.toolforge.org/{next_epoch_time}</a></p>
+          <p>ZoneStamp: <a>https://zonestamp.toolforge.org/{next_epoch_time}</a></p>
           <br>
-
           <h2>Number of participants: #</h2>
           <br>
           <br>
-
           <h2>Topics</h2>
           <ul>
             <li>All: Introductions 👋</li>
@@ -187,13 +184,11 @@ jobs:
             <li>Topic</li>
           </ul>
           <br>
-
           <h2>Tasks (strikethrough ^/⌘ + 5 to mark as complete)</h2>
           <ul>
             <li>Task</li>
           </ul>
           <br>
-
           <h2><strong>Recap</strong></h2>
           <br>
           <br>
@@ -247,7 +242,6 @@ jobs:
 
             - Call link: https://meet.jit.si/activist-dev-sync
             - This week's pad: https://etherpad.wikimedia.org/p/activist-dev-sync-${{ env.NEXT_BI_WEEKLY_DATE }}
-            - All activist pads: https://etherpad.wikimedia.org/p/activist-dev-sync
 
             Please reply in the thread for this message with anything you'd like to discuss 🧵
 
