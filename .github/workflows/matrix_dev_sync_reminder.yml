@@ -234,15 +234,15 @@ jobs:
           message: |
             Hello all! 🤖👋 Here's the reminder for [this Saturday's dev sync at 16:00 UTC](https://zonestamp.toolforge.org/${{ env.NEXT_EPOCH_TIME }}) 🧑‍💻♻️
 
-            For those new to the community, every two Saturdays the activist team does a call to discuss the project. We use [Jitsi Meet](https://meet.jit.si) and a [pad from Wikimedia's Etherpad instance](https://etherpad.wikimedia.org/p/activist-dev-sync-${{ env.NEXT_BI_WEEKLY_DATE }}) for taking notes :)${{ env.IS_CODE_NIGHT_SYNC == 'true' && '
-
-            **Also note: This dev sync is Code Night! 🌙 For the last dev sync every two months the community stays in the call to work on projects together, pair program and hang out :) All skill levels are welcome!**' || '' }}
+            For those new to the community, every two Saturdays the activist team does a call to discuss the project. We use [Jitsi Meet](https://meet.jit.si) and a [pad from Wikimedia's Etherpad instance](https://etherpad.wikimedia.org/p/activist-dev-sync-${{ env.NEXT_BI_WEEKLY_DATE }}) for taking notes :)
 
             Details for the upcoming sync:
 
             - Call link: https://meet.jit.si/activist-dev-sync
             - This week's pad: https://etherpad.wikimedia.org/p/activist-dev-sync-${{ env.NEXT_BI_WEEKLY_DATE }}
 
-            Please reply in the thread for this message with anything you'd like to discuss 🧵
+            Please reply in the thread for this message with anything you'd like to discuss 🧵${{ env.IS_CODE_NIGHT_SYNC == 'true' && '
+
+            **Also note: This dev sync is Code Night! 🌙 For the last dev sync every two months the community stays in the call to work on projects together, pair program and hang out :) All skill levels are welcome!**' || '' }}
 
             Thanks and have a great day! ❤️
