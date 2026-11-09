@@ -9,7 +9,9 @@ env:
 
 jobs:
   check-repository:
+    if: github.repository == 'activist-org/Organization'
     runs-on: ubuntu-latest
+
     outputs:
       is_correct_repo: ${{ steps.check.outputs.is_correct_repo }}
     steps:
